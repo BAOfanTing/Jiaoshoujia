@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.demo.common.QueryPageParam;
+import com.example.demo.common.Result;
 import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,12 +77,8 @@ public class UserController {
      * @return
      */
     @PostMapping("/listPageC")
-    public List<User> listPageC(@RequestBody QueryPageParam query)
+    public Result listPageC(@RequestBody QueryPageParam query)
     {
-        // 打印分页参数
-        System.out.println(query.getPageNum());
-        System.out.println(query.getPageSize());
-
         // 获取查询参数映射
         HashMap param = query.getParam();
         System.out.println((String)param.get("name"));
@@ -98,10 +95,10 @@ public class UserController {
 
         // 执行分页查询
         IPage result = userService.pageC(page);
-        System.out.println("total="+result.getTotal());
+//        System.out.println("total="+result.getTotal());
 
         // 返回当前页记录
-        return result.getRecords();
+        return Result.success(result.getRecords(),result.getTotal());
     }
    @GetMapping("/mod")
     public boolean mod(@RequestBody User user)
