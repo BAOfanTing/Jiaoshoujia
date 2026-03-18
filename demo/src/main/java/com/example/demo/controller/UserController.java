@@ -32,6 +32,7 @@ public class UserController {
     /**
      * 查询所有用户
      */
+    @CrossOrigin
     @GetMapping("/list")
     public List<User> list()
     {
@@ -123,7 +124,8 @@ public class UserController {
        return userService.saveOrUpdate(user);
    }
 
-   @GetMapping("/Search")
+   @CrossOrigin
+   @PostMapping("/Search")
     public List<User> search(@RequestParam(required = false) String name,@RequestParam(required = false) String no)
    {
        QueryWrapper<User> queryWrapper = new QueryWrapper<>();

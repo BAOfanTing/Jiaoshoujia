@@ -5,7 +5,7 @@
                 <Aside></Aside>
                 <el-container direction="vertical">
                     <Header></Header>
-                    <Content></Content>
+                    <Main></Main>
                 </el-container>
             </el-container>
         </el-container>
@@ -15,7 +15,7 @@
 <script setup lang="ts" name="index">
 import Header from './Header.vue'
 import Aside from './Aside.vue'
-import Content from './Content.vue'
+import Main from './Main.vue'
 </script>
 
 <style scoped>
