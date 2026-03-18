@@ -1,13 +1,21 @@
 <template>
-<el-main>
-        <el-scrollbar>
-          <el-table :data="tableData">
-            <el-table-column prop="date" label="Date" width="140" />
-            <el-table-column prop="name" label="Name" width="120" />
-            <el-table-column prop="address" label="Address" />
-          </el-table>
-        </el-scrollbar>
-      </el-main>
+  <el-main>
+    <el-scrollbar>
+      <el-table :data="tableData">
+        <el-table-column prop="id" label="Id" width="140" />
+        <el-table-column prop="name" label="姓名" width="120" />
+        <el-table-column prop="age" label="年龄" width="120" />
+        <el-table-column prop="sex" label="性别" width="120">
+          <template #default="scope">
+            <el-tag :type="scope.row.sex == 1 ? 'primary' : 'success'" disable-transitions>{{ scope.row.sex == 1 ? '男' : '女'}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="roleId" label="角色" width="120" />
+        <el-table-column prop="phone" label="手机号" width="120" />
+        <el-table-column prop="operation" label="操作" width="120" />
+      </el-table>
+    </el-scrollbar>
+  </el-main>
 
 </template>
 
@@ -21,17 +29,14 @@ const request = axios.create({
   timeout: 5000
 });
 
-const item = {
-  date: '2016-05-02',
-  name: 'Tom',
-  address: 'No. 189, Grove St, Los Angeles',
-}
-const tableData = ref(Array.from({ length: 20 }).fill(item))
+const tableData = ref();
 
 onMounted(() => {
   // 使用request实例发送请求，不需要写完整的URL
   request.get('/user/list').then(res => res.data).then(res => {
     console.log(res)
+    tableData.value = res
+
   }).catch(error => {
     console.error('请求失败:', error)
   })
