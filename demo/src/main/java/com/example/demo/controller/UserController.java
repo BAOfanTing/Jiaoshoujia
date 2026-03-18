@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.demo.common.QueryPageParam;
-import com.example.demo.common.Result;
+import com.example.demo.common.ResponeseResult;
 import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +77,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/listPageC")
-    public Result listPageC(@RequestBody QueryPageParam query)
+    public ResponeseResult listPageC(@RequestBody QueryPageParam query)
     {
         // 获取查询参数映射
         HashMap param = query.getParam();
@@ -98,7 +98,7 @@ public class UserController {
 //        System.out.println("total="+result.getTotal());
 
         // 返回当前页记录
-        return Result.success(result.getRecords(),result.getTotal());
+        return ResponeseResult.success(result.getRecords(),result.getTotal());
     }
    @GetMapping("/mod")
     public boolean mod(@RequestBody User user)
