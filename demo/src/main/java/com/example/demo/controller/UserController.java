@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 
-
+@CrossOrigin
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -34,9 +34,9 @@ public class UserController {
      */
     @CrossOrigin
     @GetMapping("/list")
-    public List<User> list()
+    public ResponeseResult list()
     {
-        return userService.listAll();
+        return ResponeseResult.success(userService.listAll());
     }
     @PostMapping("/listPage")
     /**
@@ -77,6 +77,8 @@ public class UserController {
      * @param query
      * @return
      */
+
+    @CrossOrigin
     @PostMapping("/listPageC")
     public ResponeseResult listPageC(@RequestBody QueryPageParam query)
     {

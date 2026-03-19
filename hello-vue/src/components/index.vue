@@ -1,9 +1,9 @@
 <template>
-    <div class="common-layout">
-        <el-container direction="vertical">
-            <el-container direction="horizontal">
+    <div class="common-layout" style="height: 100vh; width: 100%;">
+        <el-container direction="vertical" style="height: 100%;">
+            <el-container direction="horizontal" style="flex: 1;">
                 <Aside></Aside>
-                <el-container direction="vertical">
+                <el-container direction="vertical" style="flex: 1;">
                     <Header></Header>
                     <Main></Main>
                 </el-container>
