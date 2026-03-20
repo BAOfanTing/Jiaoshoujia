@@ -84,21 +84,18 @@ public class UserController {
     {
         // 获取查询参数映射
         HashMap param = query.getParam();
-        System.out.println((String)param.get("name"));
+        System.out.println(query);
         String name=(String)param.get("name");
+        System.out.println(query.getPageNum());
+        System.out.println(query.getPageSize());
 
         // 构建分页对象
         Page<User> page = new Page();
         page.setCurrent(query.getPageNum());
         page.setSize(query.getPageSize());
 
-        // 构建动态查询条件
-//        LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-//        lambdaQueryWrapper.like(User::getName,name);
-
         // 执行分页查询
         IPage result = userService.pageC(page);
-//        System.out.println("total="+result.getTotal());
 
         // 返回当前页记录
         return ResponeseResult.success(result.getRecords(),result.getTotal());
