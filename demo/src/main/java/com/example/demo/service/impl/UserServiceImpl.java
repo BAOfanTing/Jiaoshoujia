@@ -1,5 +1,6 @@
 package com.example.demo.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -24,5 +25,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public IPage<User> pageC(Page<User> page) {
         return userMapper.pageC(page);
+    }
+
+    @Override
+    public IPage pageC1(Page<User> page, LambdaQueryWrapper<User> lambdaQueryWrapper) {
+        return userMapper.pageC1(page,lambdaQueryWrapper);
     }
 }

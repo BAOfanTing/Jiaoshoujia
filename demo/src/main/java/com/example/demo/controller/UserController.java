@@ -8,6 +8,7 @@ import com.example.demo.common.QueryPageParam;
 import com.example.demo.common.ResponeseResult;
 import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
+import com.mysql.cj.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -100,23 +101,58 @@ public class UserController {
         // 返回当前页记录
         return ResponeseResult.success(result.getRecords(),result.getTotal());
     }
+
+    @CrossOrigin
+    @PostMapping("/listPageC1")
+    public ResponeseResult listPageC1(@RequestBody QueryPageParam query)
+    {
+        // 获取查询参数映射
+        HashMap param = query.getParam();
+        System.out.println(query);
+        String name=(String)param.get("name");
+        String sex = (String)param.get("sex");
+        System.out.println(query.getPageNum());
+        System.out.println(query.getPageSize());
+
+        // 构建分页对象
+        Page<User> page = new Page();
+        page.setCurrent(query.getPageNum());
+        page.setSize(query.getPageSize());
+
+        LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        if(!name.isEmpty() &&!"null".equals( name))
+        {
+            lambdaQueryWrapper.like(User::getName,name);
+        }
+        if(!sex.isEmpty() &&!"null".equals( sex))
+        {
+            lambdaQueryWrapper.eq(User::getSex,sex);
+        }
+
+        // 执行分页查询
+        IPage result = userService.pageC1(page,lambdaQueryWrapper);
+
+        // 返回当前页记录
+        return ResponeseResult.success(result.getRecords(),result.getTotal());
+    }
    @GetMapping("/mod")
     public boolean mod(@RequestBody User user)
    {
        return userService.updateById(user);
    }
+    @CrossOrigin
    @PostMapping("/add")
-    public boolean add(User user)
+    public ResponeseResult add(@RequestBody User user)
    {
-       return userService.save(user);
+       return userService.save(user) ? ResponeseResult.success() : ResponeseResult.fail();
    }
-
+   @CrossOrigin
    @DeleteMapping("/delete")
     public boolean delete(int id)
    {
        return userService.removeById(id);
    }
-
+    @CrossOrigin
    @PostMapping("/saveOrMod")
    public boolean saveOrMod(@RequestBody User user)
    {
