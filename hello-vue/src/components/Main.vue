@@ -9,55 +9,12 @@
 
     <el-button type="primary" @click="loadDataC1">查询</el-button>
 
-    <el-button plain @click="dialogVisible = true">
+    <el-button plain @click="showAddDialog()">
       新增
     </el-button>
-    <el-dialog
-    v-model="dialogVisible"
-    title="Tips"
-    width="500"
-    >
-    //新增用户表单
-    <el-form :model="form" label-width="auto" style="max-width: 600px">
-      <el-form-item label="编号">
-        <el-input v-model="form.no" />
-      </el-form-item>
-    <el-form-item label="姓名">
-      <el-input v-model="form.name" />
-    </el-form-item>
-    <el-form-item label="年龄">
-      <el-input v-model="form.age" />
-    </el-form-item>
-    <el-form-item label="密码">
-      <el-input v-model="form.password" />
-    </el-form-item>
-    <el-form-item label="手机号">
-      <el-input v-model="form.phone" />
-    </el-form-item>
-    <el-form-item label="角色">
-      <el-radio-group v-model="form.roleId">
-        <el-radio value="1">管理员</el-radio>
-        <el-radio value="2">普通用户</el-radio>
-      </el-radio-group>
-    </el-form-item>
-    <el-form-item label="性别">
-      <el-radio-group v-model="form.sex">
-        <el-radio value="1">男</el-radio>
-        <el-radio value="0">女</el-radio>
-      </el-radio-group>
-    </el-form-item>
     
-    </el-form>
-
-    <template #footer>
-      <div class="dialog-footer">
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="dialogVisible = false; addUser()">
-          确认
-        </el-button>
-      </div>
-    </template>
-    </el-dialog>
+    <!-- 使用独立的UserForm组件 -->
+    <UserForm v-model="dialogVisible" @submit="handleFormSubmit" />
   </div>
   <div>
     <el-main>
@@ -94,9 +51,11 @@
 </template>
 
 <script setup lang="ts" name="Main">
-import { ref, onMounted, reactive } from 'vue';
+import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import type { ComponentSize } from 'element-plus'
+import UserForm from './UserForm.vue'
+
 let searchName = ref('');
 let searchSex = ref('');
 let dialogVisible = ref(false);
@@ -115,15 +74,7 @@ let total = ref(0);
 const size = ref<ComponentSize>('default')
 const background = ref(false)
 const disabled = ref(false)
-const form = reactive({
-  no: '',
-  name: '',
-  password: '',
-  age: '',
-  sex: '',
-  phone: '',
-  roleId: '',
-})
+
 //改变每页条数时重置页码为第一页,并重新请求数据
 const handleSizeChange = (val: number) => {
   pageSize.value = val;
@@ -148,12 +99,16 @@ const options = [
   }
 ]
 
-function addUser() {
-  request.post('/user/add', form).then(res => res.data).then(res => {
+function showAddDialog() {
+  dialogVisible.value = true;
+}
+
+// 处理表单提交
+function handleFormSubmit(formData: any) {
+  request.post('/user/add', formData).then(res => res.data).then(res => {
     console.log(res)
     if (res.code == 200) {
       alert(res.msg);
-      dialogVisible.value = false;
       loadData();
     } else {
       alert(res.msg);
@@ -167,59 +122,53 @@ function addUser() {
  * 自定义查询用户列表
  */
 const loadDataC1 = () => {
-  const queryParam = {
-    pageNum: pageNumber.value,
-    pageSize: pageSize.value,
-    param: {
-      name: searchName.value, // 如果有name查询条件可以在这里设置
-      sex: searchSex.value // 如果有sex查询条件可以在这里设置
+    const queryParam = {
+      pageNum: pageNumber.value,
+      pageSize: pageSize.value,
+      param: {
+        name: searchName.value,
+        sex: searchSex.value
+      }
     }
+
+    request.post('/user/listPageC1', queryParam).then(res => res.data).then(res => {
+      console.log("后端返回数据:", res)
+      if (res.code == 200) {
+        tableData.value = res.data;
+        total.value = res.total;
+      } else {
+        alert(res.msg);
+      }
+    }).catch(error => {
+      console.error('请求失败:', error)
+    })
   }
 
-  request.post('/user/listPageC1', queryParam).then(res => res.data).then(res => {
-    console.log("后端返回数据:", res)
-    if (res.code == 200) {
-      tableData.value = res.data;
-      total.value = res.total; // 正确赋值总条数 
-    } else {
-      alert(res.msg);
-    }
-  }).catch(error => {
-    console.error('请求失败:', error)
-  })
-}
 const loadData = () => {
-  const queryParam = {
-    pageNum: pageNumber.value,
-    pageSize: pageSize.value,
-    param: {
-      name: searchName.value // 如果有name查询条件可以在这里设置
+    const queryParam = {
+      pageNum: pageNumber.value,
+      pageSize: pageSize.value,
+      param: {
+        name: searchName.value
+      }
     }
+
+    request.post('/user/listPageC', queryParam).then(res => res.data).then(res => {
+      console.log("后端返回数据:", res)
+      if (res.code == 200) {
+        tableData.value = res.data;
+        total.value = res.total;
+      } else {
+        alert(res.msg);
+      }
+    }).catch(error => {
+      console.error('请求失败:', error)
+    })
   }
-
-  request.post('/user/listPageC', queryParam).then(res => res.data).then(res => {
-    console.log("后端返回数据:", res)
-    if (res.code == 200) {
-      tableData.value = res.data;
-      total.value = res.total; // 正确赋值总条数 
-    } else {
-      alert(res.msg);
-    }
-  }).catch(error => {
-    console.error('请求失败:', error)
-  })
-}
-
 
 //页面初始化调用一下loadData方法
 onMounted(() => {
   loadData();
-
-  // request.post('/user/Search?name=test').then(res => res.data).then(res => {
-  //   console.log(res)
-  // }).catch(error => {
-  //   console.error('请求失败:', error)
-  // })
 })
 
 </script>
