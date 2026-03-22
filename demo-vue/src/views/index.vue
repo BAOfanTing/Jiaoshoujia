@@ -15,7 +15,7 @@
 <script setup lang="ts" name="index">
 import Header from '../components/Header.vue'
 import Aside from '../components/Aside.vue'
-import Main from '../components/Main.vue'
+import Main from './admin/List.vue'
 </script>
 
 <style scoped>

@@ -1,13 +1,13 @@
 <template>
 
   <div style="display: flex; align-items: center; gap: 10px; margin: 10px;">
-    <el-input placeholder="请输入姓名" v-model="searchName" suffix-icon="el-icon-search"
+    <el-input placeholder="请输入姓名" v-model="queryForm.name" suffix-icon="el-icon-search"
       style="width: 200px;"></el-input>
-    <el-select v-model="searchSex" placeholder="请选择性别" style="width: 240px">
+    <el-select v-model="queryForm.sex" placeholder="请选择性别" style="width: 240px">
       <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
     </el-select>
 
-    <el-button type="primary" >查询</el-button>
+    <el-button type="primary" @click="getList()">查询</el-button>
 
     <el-button plain @click="showAddDialog()">
       新增
@@ -19,8 +19,9 @@
   <div>
     <el-main>
       <el-scrollbar>
-        <el-table :data="tableData">
-          <el-table-column prop="id" label="Id" width="150" />
+        <el-table :data="tableData" v-loading="listLoading">
+          <el-table-column type="selection" width="55" />
+          <el-table-column prop="username" label="用户名" width="140" />
           <el-table-column prop="name" label="姓名" width="140" />
           <el-table-column prop="age" label="年龄" width="120" />
           <el-table-column prop="sex" label="性别" width="120">
@@ -29,8 +30,8 @@
                 : '女' }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="roleId" label="角色" width="120" />
           <el-table-column prop="phone" label="手机号" width="140" />
+          <el-table-column prop="headurl" label="头像" width="120" />
           <el-table-column prop="operation" label="操作" width="200">
             <template #default="scope">
               <el-button type="primary" plain>编辑</el-button>
@@ -51,15 +52,19 @@
 </template>
 
 <script setup lang="ts" name="Main">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, reactive } from 'vue';
 import type { ComponentSize } from 'element-plus'
+import { adminAPi } from '@/api/admin-api';
+import Constants from '@/utils/constants';
 
-let searchName = ref('');
-let searchSex = ref('');
 let dialogVisible = ref(false);
 
 
-const tableData = ref();
+//列表数据
+const tableData = ref([]);
+//列表加载中
+const listLoading = ref(false);
+
 let pageNumber = ref(1);
 let pageSize = ref(5);
 let total = ref(0);
@@ -67,6 +72,41 @@ let total = ref(0);
 const size = ref<ComponentSize>('default')
 const background = ref(false)
 const disabled = ref(false)
+
+//表单初始值
+const queryFormState = 
+{
+  name: '',
+  sex: '',
+  pageNum:1,
+  pageSize:Constants.PAGE_SIZE,
+}
+//表单查询条件对象
+const queryForm = reactive({...queryFormState});
+
+
+async function getList()
+{
+  try
+  {
+    listLoading.value = true;
+    let responseModel = await adminAPi.queryPageList(queryForm,queryForm.pageNum,queryForm.pageSize);
+    tableData.value = responseModel.data.list;
+    total.value = responseModel.data.totalCount;
+  }
+  catch (error)
+  {
+    console.error(error);
+  }
+  finally
+  {
+    listLoading.value = false;
+  }
+}
+
+onMounted(() => {
+  getList();
+});
 
 //改变每页条数时重置页码为第一页,并重新请求数据
 const handleSizeChange = (val: number) => {

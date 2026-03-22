@@ -22,7 +22,7 @@ public class ControllerExceptionHandler {
         return R.fail(e.getMessage());
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(BussinessException.class)
     public R handleBussinessException(BussinessException e) {
         return R.fail(e.getCode(),e.getMessage());
     }
