@@ -19,6 +19,6 @@ public class Admin {
     private String name;
     private int age;
     private int sex;
-    private int tel;
+    private String tel;
     private String headurl;
 }
