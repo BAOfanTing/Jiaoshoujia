@@ -45,7 +45,7 @@ public class AdminController {
 
 
     @Operation(summary = "修改管理员")
-    @GetMapping("/update")
+    @PostMapping("/update")
     @CrossOrigin
     public R update(@RequestBody Admin admin)
    {
