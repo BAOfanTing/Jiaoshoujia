@@ -2,7 +2,7 @@
   <el-dialog v-model="visible" :title="form.id ? '修改用户' : '新增用户'" width="400">
     <el-form ref="formRef" :model="form" label-width="auto" style="max-width: 600px" :rules="rules">
       <el-form-item label="用户名" prop="username">
-        <el-input v-model="form.username" style="width: 50%;" />
+        <el-input v-model="form.username" :readonly="m_readonly" style="width: 50%;" />
       </el-form-item>
       <el-form-item label="姓名" prop="name">
         <el-input v-model="form.name" style="width: 50%;" />
@@ -52,6 +52,9 @@ defineExpose({
 const visible = ref(false);
 // 按钮加载中
 const btnLoading = ref(false);
+
+// 是否只读
+const m_readonly = ref(false);
 
 //自定义事件,用于刷新列表
 const emit = defineEmits(['refresh']);
@@ -105,10 +108,12 @@ const rules = reactive({
 function showModel(row) {
   if (row) {
     //修改
+    m_readonly.value = true;
     Object.assign(form, row);
   }
   else {
     //新增
+    m_readonly.value = false;
     Object.assign(form, formDefault);
   }
   // 表单附初始值
@@ -121,21 +126,22 @@ function handleUpload() {
   // 上传头像逻辑
 }
 
+
+
 function handleSubmit() {
   btnLoading.value = true;
 
   try {
     formRef.value.validate().then(async () => {
-      if(form.id)
-    {
-      //修改
-      await adminAPi.update(form);
-    }
-    else{
-      //新增
-      await adminAPi.add(form);
-    }
-    ElMessage.success(form.id ? '修改成功' : '新增成功');
+      if (form.id) {
+        //修改
+        await adminAPi.update(form);
+      }
+      else {
+        //新增
+        await adminAPi.add(form);
+      }
+      ElMessage.success(form.id ? '修改成功' : '新增成功');
       visible.value = false;
       btnLoading.value = false;
       //触发事件
@@ -147,6 +153,7 @@ function handleSubmit() {
   }
   finally {
     btnLoading.value = false;
+    m_readonly.value = false;
   }
 
 }

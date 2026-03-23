@@ -37,6 +37,7 @@ public class AdminController {
         queryWrapper.like(admin.getName()!=null,Admin::getName,admin.getName());
         System.out.println(admin.getName());
         queryWrapper.like(admin.getTel()!=null,Admin::getTel,admin.getTel());
+        queryWrapper.orderByDesc(Admin::getId);
         PageHelper.startPage(pageNum,pageSize);
         List< Admin> list = adminService.list(queryWrapper);
         PageInfo<Admin> pageInfo = new PageInfo(list);
@@ -68,12 +69,13 @@ public class AdminController {
        adminService.save(admin);
        return  R.success();
    }
-   @CrossOrigin
+
    @Operation(summary = "删除用户")
-   @DeleteMapping("/delete")
-    public R delete(int id)
+   @PostMapping("/delete")
+   @CrossOrigin
+    public R delete(@RequestParam List<Integer> ids)
    {
-       adminService.removeById(id);
+       adminService.removeByIds(ids);
        return R.success();
    }
 

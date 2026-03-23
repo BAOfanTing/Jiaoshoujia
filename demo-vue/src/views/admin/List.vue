@@ -10,14 +10,16 @@
     <el-button type="primary" @click="getList()">查询</el-button>
 
     <el-button plain @click="showAddDialog()">
+
       新增
     </el-button>
+    <el-button type="danger" @click="handleDeleteUser()">删除选中</el-button>
 
   </div>
   <div>
     <el-main>
       <el-scrollbar>
-        <el-table :data="tableData" v-loading="listLoading">
+        <el-table :data="tableData" v-loading="listLoading" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="55" />
           <el-table-column prop="username" label="用户名" width="140" />
           <el-table-column prop="name" label="姓名" width="140" />
@@ -33,7 +35,7 @@
           <el-table-column prop="operation" label="操作" width="200">
             <template #default="scope">
               <el-button type="primary" plain @click="updateUser(scope.row)">编辑</el-button>
-              <el-button type="danger" plain>删除</el-button>
+              <el-button type="danger" plain @click="handleDeleteUser(scope.row.id)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -59,6 +61,7 @@ import type { ComponentSize } from 'element-plus'
 import { adminAPi } from '@/api/admin-api';
 import Constants from '@/utils/constants';
 import AddDialog from '@/views/admin/AddDialog.vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
 
 let dialogVisible = ref(false);
 
@@ -76,6 +79,8 @@ const background = ref(false)
 const disabled = ref(false)
 // 新增弹窗
 const addDialogRef = ref();
+// 选中的用户
+const multipleSelection = ref([])
 
 //表单初始值
 const queryFormState = 
@@ -142,11 +147,85 @@ function showAddDialog() {
   addDialogRef.value.showModel();
 }
 
-
-function updateUser(row)
+/**
+ * 修改用户
+ * @param row 
+ * @returns 
+ */
+function updateUser(row: any)
 {
   //调用子组件方法显示弹窗
   addDialogRef.value.showModel(row);
+}
+
+function handleSelectionChange(selection: any)
+{
+ multipleSelection.value = selection;
+}
+
+/**
+ * 删除用户
+ * @param id 
+ * @returns 
+ */
+function handleDeleteUser(id: any)
+{
+   ElMessageBox.confirm(
+    '确定删除',
+    'Warning',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    }
+  )
+    .then(() => {
+      // 确认删除
+      deleteUser(id);
+      ElMessage({
+        type: 'success',
+        message: '删除成功',
+      })
+    })
+    .catch(() => {
+      ElMessage({
+        type: 'info',
+        message: '删除取消',
+      })
+    })
+}
+
+
+
+/**
+ * 删除用户
+ * @param id 
+ * @returns 
+ */
+async function deleteUser(id: any) {
+  //删除用户逻辑 
+  try{
+    listLoading.value = true;
+    let ids = id ? [id] : multipleSelection.value.map((item: any) => item.id);
+    if(ids.length === 0)
+    {
+      ElMessage({
+        type: 'warning',
+        message: '请选择要删除的用户',
+      })
+      return;
+    }
+    await adminAPi.delete(ids);
+    ElMessage.success('删除成功');
+    //触发事件
+    getList();
+  }
+  catch (error) {
+    console.error(error);
+  }
+  finally {
+    listLoading.value = false;
+  }
 }
 
 </script>

@@ -16,11 +16,11 @@ export const adminAPi = {
 
     /**
      * 删除管理员
-     * @param id 管理员ID
+     * @param ids 管理员ID
      * @returns Promise
      */
-    delete: (id: any) => {
-        return post('/admin/delete?id=' + id, {});
+    delete: (ids: any) => {
+        return post('/admin/delete?ids=' + ids, {});
     },
 
     /**

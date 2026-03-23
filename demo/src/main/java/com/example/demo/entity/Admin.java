@@ -12,13 +12,13 @@ import lombok.Data;
 public class Admin {
 
     @TableId
-    private int id;
+    private Integer id;
     @Schema(description = "用户名")
     private String username;
     private String userpwd;
     private String name;
-    private int age;
-    private int sex;
+    private Integer age;
+    private Integer sex;
     private String tel;
     private String headurl;
 }
