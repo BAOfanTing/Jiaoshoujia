@@ -45,7 +45,7 @@
 
   <div class="demo-pagination-block">
     <div class="demonstration">Change page size</div>
-    <el-pagination v-model:current-page="pageNumber" v-model:page-size="pageSize" :page-sizes="[5, 10, 20, 50]"
+    <el-pagination v-model:current-page="queryForm.pageNum" v-model:page-size="queryForm.pageSize" :page-sizes="[5, 10, 20, 50]"
       :size="size" :disabled="disabled" :background="background" layout="sizes, prev, pager, next" :total="total"
       @size-change="handleSizeChange" @current-change="handleCurrentChange" />
   </div>
@@ -65,8 +65,7 @@ const tableData = ref([]);
 //列表加载中
 const listLoading = ref(false);
 
-let pageNumber = ref(1);
-let pageSize = ref(5);
+//总记录数
 let total = ref(0);
 
 const size = ref<ComponentSize>('default')
@@ -92,7 +91,8 @@ async function getList()
     listLoading.value = true;
     let responseModel = await adminAPi.queryPageList(queryForm,queryForm.pageNum,queryForm.pageSize);
     tableData.value = responseModel.data.list;
-    total.value = responseModel.data.totalCount;
+    total.value = responseModel.data.total;
+    console.log('查询结果:', total.value);
   }
   catch (error)
   {
@@ -110,15 +110,15 @@ onMounted(() => {
 
 //改变每页条数时重置页码为第一页,并重新请求数据
 const handleSizeChange = (val: number) => {
-  pageSize.value = val;
-  pageNumber.value = 1;
-  // loadData();
+  queryForm.pageSize = val;
+  queryForm.pageNum = 1;
+  getList();
 }
 
 //点击页码时,更新当前页重新请求数据
 const handleCurrentChange = (val: number) => {
-  pageNumber.value = val;
-  // loadData();
+  queryForm.pageNum = val;
+  getList();
 }
 
 const options = [
@@ -180,5 +180,13 @@ function showAddDialog() {
 :deep(.el-table__header-wrapper),
 :deep(.el-table__body-wrapper) {
   width: 100%;
+}
+
+/* 分页组件样式 */
+.demo-pagination-block {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

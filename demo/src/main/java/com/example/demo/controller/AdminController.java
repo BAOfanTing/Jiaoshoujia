@@ -2,7 +2,7 @@ package com.example.demo.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.example.demo.entity.Admin;
-import com.example.demo.exception.BussinessException;
+import com.example.demo.exception.BusinessException;
 import com.example.demo.response.R;
 import com.example.demo.response.ResponseCode;
 import com.example.demo.service.AdminService;
@@ -63,7 +63,7 @@ public class AdminController {
        long count = adminService.count(queryWrapper);
        if(count>0)
        {
-           throw new BussinessException(ResponseCode.USERNAME_EXIST);
+           throw new BusinessException(ResponseCode.USERNAME_EXIST);
        }
        adminService.save(admin);
        return  R.success();
