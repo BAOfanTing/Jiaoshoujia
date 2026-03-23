@@ -12,9 +12,7 @@
     <el-button plain @click="showAddDialog()">
       新增
     </el-button>
-    
-    <!-- 使用独立的UserForm组件 -->
-    <UserForm v-model="dialogVisible"  />
+
   </div>
   <div>
     <el-main>
@@ -49,6 +47,10 @@
       :size="size" :disabled="disabled" :background="background" layout="sizes, prev, pager, next" :total="total"
       @size-change="handleSizeChange" @current-change="handleCurrentChange" />
   </div>
+
+  <!-- 新增弹窗 -->
+  <AddDialog v-model:dialogVisible="dialogVisible" />
+
 </template>
 
 <script setup lang="ts" name="Main">
@@ -56,6 +58,7 @@ import { ref, onMounted, reactive } from 'vue';
 import type { ComponentSize } from 'element-plus'
 import { adminAPi } from '@/api/admin-api';
 import Constants from '@/utils/constants';
+import AddDialog from '@/views/admin/AddDialog.vue';
 
 let dialogVisible = ref(false);
 
