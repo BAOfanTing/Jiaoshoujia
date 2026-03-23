@@ -1,76 +1,80 @@
 <template>
-   <el-dialog v-bind:modelValue="dialogVisible" title="新增用户" width="500">
-    <el-form ref="formRef" :model="form" label-width="auto" :rules="rules" style="max-width: 600px">
+  <el-dialog v-model="visible" :title="form.id ? '修改用户' : '新增用户'" width="400">
+    <el-form ref="formRef" :model="form" label-width="auto" style="max-width: 600px" :rules="rules">
       <el-form-item label="用户名" prop="username">
-        <el-input v-model="form.username" />
+        <el-input v-model="form.username" style="width: 50%;" />
       </el-form-item>
       <el-form-item label="姓名" prop="name">
-        <el-input v-model="form.name" />
-      </el-form-item>
-      <el-form-item label="年龄" prop="age">
-        <el-input v-model="form.age" />
+        <el-input v-model="form.name" style="width: 50%;" />
       </el-form-item>
       <el-form-item label="密码" prop="userpwd">
-        <el-input v-model="form.userpwd" type="password" />
+        <el-input v-model="form.userpwd" type="password" style="width: 50%;" />
       </el-form-item>
-       <el-form-item label="性别" prop="sex">
+      <el-form-item label="年龄" prop="age">
+        <el-input v-model="form.age" style="width: 50%;" />
+      </el-form-item>
+      <el-form-item label="性别" prop="sex">
         <el-radio-group v-model="form.sex">
           <el-radio value="1">男</el-radio>
           <el-radio value="0">女</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="手机号" prop="phone">
-        <el-input v-model="form.phone" />
+        <el-input v-model="form.phone" style="width: 50%;" />
       </el-form-item>
       <el-form-item label="头像" prop="headurl">
-        <el-input v-model="form.headurl" /><el-button type="primary" @click="handleUpload">上传</el-button>
+        <el-input v-model="form.headurl" style="width: 50%;" /><el-button type="primary"
+          @click="handleUpload">上传</el-button>
       </el-form-item>
-     
+
     </el-form>
 
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="handleCancel">取消</el-button>
-        <el-button type="primary" @click="handleConfirm">确认</el-button>
+        <el-button @click="visible = false">取消</el-button>
+        <el-button type="primary" @click="handleSubmit" v-loading="btnLoading">确认确认</el-button>
       </div>
     </template>
   </el-dialog>
 </template>
 
 <script setup lang="ts" name="UserForm">
-import { ref, reactive, nextTick, watch } from 'vue';
-import type { FormInstance, FormRules } from 'element-plus';
+import { ref, reactive, nextTick } from 'vue';
+import { adminAPi } from '@/api/admin-api';
+import { ElMessage } from 'element-plus';
 
-const props = defineProps(['dialogVisible'])
-const emit = defineEmits(['update:dialogVisible'])
+// 公开方法，用于在父组件中调用
+defineExpose({
+  showModel,
+})
 
-// 数据表单格式
-interface RuleForm {
-  username: string;
-  name: string;
-  age: string;
-  sex: string;
-  phone: string;
-  headurl: string;
-  userpwd: string;
+// 弹窗是否显示
+const visible = ref(false);
+// 按钮加载中
+const btnLoading = ref(false);
+
+//自定义事件,用于刷新列表
+const emit = defineEmits(['refresh']);
+
+//表单组件
+const formRef = ref();
+// 表单初始值
+const formDefault = {
+  id: undefined,
+  username: undefined,
+  name: undefined,
+  age: undefined,
+  sex: undefined,
+  phone: undefined,
+  headurl: undefined,
+  userpwd: undefined,
 }
 
-const formRef = ref<FormInstance>();
+let form = reactive({ ...formDefault });
 
-// 数据表单数据初始化
-const form = reactive<RuleForm>({
-  username: '',
-  name: '',
-  userpwd: '',
-  age: '',
-  sex: '',
-  phone: '',
-  headurl: '',
-});
 
-// 表单填写的规则
-const rules = reactive<FormRules<RuleForm>>({
-  username: [ 
+const rules = reactive({
+  username: [
     { required: true, message: '请输入用户名', trigger: 'blur' },
     { min: 3, max: 5, message: '用户名长度必须在3-5位之间', trigger: 'blur' },
   ],
@@ -84,39 +88,69 @@ const rules = reactive<FormRules<RuleForm>>({
   age: [
     { required: true, message: '请输入年龄', trigger: 'blur' },
   ],
+  sex: [
+    { required: true, message: '请选择性别', trigger: 'change' },
+  ],
+  phone: [
+    { required: true, message: '请输入手机号', trigger: 'blur' },
+  ],
+  headurl: [
+    { required: true, message: '请上传头像', trigger: 'blur' },
+  ],
 });
 
-// 重置表单
-const resetForm = () => {
-  Object.assign(form, {
-    username: '',
-    name: '',
-    userpwd: '',
-    age: '',
-    sex: '',
-    phone: '',
-    headurl: '',
-  });
-  nextTick(() => {
-    formRef.value?.resetFields();
-  });
-};
-
-// 取消按钮
-const handleCancel = () => {
-  emit('update:dialogVisible', false);
-};
 
 
-async function handleUpload()
-{
+// 显示弹窗
+function showModel(row) {
+  if (row) {
+    //修改
+    Object.assign(form, row);
+  }
+  else {
+    //新增
+    Object.assign(form, formDefault);
+  }
+  // 表单附初始值
+
+  visible.value = true;
+}
+
+
+function handleUpload() {
   // 上传头像逻辑
 }
 
-// 确认按钮
-const handleConfirm = () => {
-  emit('update:dialogVisible', false);
-};
+function handleSubmit() {
+  btnLoading.value = true;
+
+  try {
+    formRef.value.validate().then(async () => {
+      if(form.id)
+    {
+      //修改
+      await adminAPi.update(form);
+    }
+    else{
+      //新增
+      await adminAPi.add(form);
+    }
+    ElMessage.success(form.id ? '修改成功' : '新增成功');
+      visible.value = false;
+      btnLoading.value = false;
+      //触发事件
+      emit('refresh');
+    });
+  }
+  catch (error) {
+
+  }
+  finally {
+    btnLoading.value = false;
+  }
+
+}
+
 </script>
 
 <style scoped>

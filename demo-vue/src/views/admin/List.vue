@@ -32,7 +32,7 @@
           <el-table-column prop="headurl" label="头像" width="120" />
           <el-table-column prop="operation" label="操作" width="200">
             <template #default="scope">
-              <el-button type="primary" plain>编辑</el-button>
+              <el-button type="primary" plain @click="updateUser(scope.row)">编辑</el-button>
               <el-button type="danger" plain>删除</el-button>
             </template>
           </el-table-column>
@@ -48,8 +48,8 @@
       @size-change="handleSizeChange" @current-change="handleCurrentChange" />
   </div>
 
-  <!-- 新增弹窗 -->
-  <AddDialog v-model:dialogVisible="dialogVisible" />
+  <!-- 新增弹窗,刷新列表事件 -->
+  <AddDialog ref="addDialogRef" @refresh="getList" />
 
 </template>
 
@@ -74,6 +74,8 @@ let total = ref(0);
 const size = ref<ComponentSize>('default')
 const background = ref(false)
 const disabled = ref(false)
+// 新增弹窗
+const addDialogRef = ref();
 
 //表单初始值
 const queryFormState = 
@@ -136,9 +138,16 @@ const options = [
 ]
 
 function showAddDialog() {
-  dialogVisible.value = true;
+  //调用子组件方法显示弹窗
+  addDialogRef.value.showModel();
 }
 
+
+function updateUser(row)
+{
+  //调用子组件方法显示弹窗
+  addDialogRef.value.showModel(row);
+}
 
 </script>
 
