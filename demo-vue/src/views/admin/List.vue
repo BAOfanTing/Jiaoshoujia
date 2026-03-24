@@ -13,7 +13,7 @@
 
       新增
     </el-button>
-    <el-button type="danger" @click="handleDeleteUser()">删除选中</el-button>
+    <el-button type="danger" @click="handleDeleteUser">删除选中</el-button>
 
   </div>
   <div>
