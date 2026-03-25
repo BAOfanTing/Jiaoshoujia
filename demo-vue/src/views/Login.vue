@@ -44,6 +44,7 @@ import { adminAPi } from '@/api/admin-api';
 import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
+import { useAdminStore } from '@/stores/admin';
 
 const router = useRouter();
 const captchaImage = ref(' ');
@@ -94,7 +95,10 @@ async function handleSubmit() {
         await formRef.value.validate();
         btnLoading.value = true;
         let loginResult = await adminAPi.login(form);
-        // console.log(loginResult);
+
+        //存入状态
+        useAdminStore().setAdminInfo(loginResult.data);
+
         router.push('/index');
     }
     catch (error: any) {

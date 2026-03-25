@@ -4,6 +4,7 @@
             <h1 class="logo">欢迎来到仓库管理系统</h1>
         </div>
         <div>
+            <span>欢迎，{{ admin.name }}</span>
             <el-button type="primary" size="small" @click="logout">退出登录</el-button>
         </div>
     </el-header>
@@ -14,6 +15,15 @@ import { ref } from 'vue';
 import { adminAPi } from '@/api/admin-api';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
+import { useAdminStore } from '@/stores/admin';
+import { storeToRefs } from 'pinia';
+
+//从状态管理中获取admin信息
+const adminStore = useAdminStore();
+//转为响应式数据
+const{admin} = storeToRefs(adminStore);
+
+
 
 const router = useRouter();
 

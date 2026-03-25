@@ -120,7 +120,7 @@ public class AdminController {
         admin1.setToken(StpUtil.getTokenValue());
 
         // 6. 返回登录成功及用户 token 信息
-        return  R.success();
+        return  R.data(admin1);
     }
 
     @Operation(summary = "用户登出")
