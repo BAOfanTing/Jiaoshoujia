@@ -21,4 +21,13 @@ public class Admin {
     private Integer sex;
     private String tel;
     private String headurl;
+
+
+    //不是数据表里的字段
+    @TableField(exist = false)
+    private String captchaID;
+    @TableField(exist = false)
+    private String captchaCode;
+    @TableField(exist = false)
+    private String token;
 }

@@ -3,17 +3,35 @@
         <div class="header-left">
             <h1 class="logo">欢迎来到仓库管理系统</h1>
         </div>
+        <div>
+            <el-button type="primary" size="small" @click="logout">退出登录</el-button>
+        </div>
     </el-header>
 </template>
 
 <script setup lang="ts" name="Header">
 import { ref } from 'vue';
+import { adminAPi } from '@/api/admin-api';
+import { useRouter } from 'vue-router';
+import { ElMessage } from 'element-plus';
 
-const activeIndex = ref('1');
+const router = useRouter();
 
-const handleSelect = (key: string, keyPath: string[]) => {
-    console.log(key, keyPath);
-};
+async function logout()
+{
+    try
+    {
+        let loginResult =await adminAPi.logout();
+        ElMessage.success('退出登录成功');
+        window.location.href = '/login';
+    }
+    catch (error)
+    {
+        console.log(error);
+        ElMessage.error('退出登录失败');
+    }
+}
+
 </script>
 
 <style scoped>

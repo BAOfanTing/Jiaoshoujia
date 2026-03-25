@@ -41,5 +41,12 @@ export const adminAPi = {
      */
     queryPageList: (param: any, pageNum: any, pageSize: any) => {
         return post('/admin/list?pageNum=' + pageNum + '&pageSize=' + pageSize, param);
-    }
+    },
+
+    login: (param: any) => {
+        return post('/admin/login', param);
+    },
+    logout: () => {
+        return post('/admin/logout', {});
+    },
 };
