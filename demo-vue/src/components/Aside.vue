@@ -4,15 +4,15 @@
             :default-active="activeIndex"
             class="aside-menu"
             mode="vertical"
-            @select="handleSelect"
+            @select="handleMenuSelect"
         >
-            <el-menu-item index="1">
+            <el-menu-item index="welcome">
                 <el-icon><House /></el-icon>
                 <span>首页</span>
             </el-menu-item>
-            <el-menu-item index="2">
+            <el-menu-item index="admin">
                 <el-icon><Menu /></el-icon>
-                <span>菜单管理</span>
+                <span>用户管理</span>
             </el-menu-item>
             <el-menu-item index="3">
                 <el-icon><ShoppingCart /></el-icon>
@@ -33,12 +33,18 @@
 <script setup lang="ts" name="Aside">
 import { ref } from 'vue';
 import { House, Menu, ShoppingCart, User, Setting } from '@element-plus/icons-vue';
+import { useRouter } from 'vue-router';
 
-const activeIndex = ref('1');
+const router = useRouter();
+const activeIndex = ref('welcome');
 
-const handleSelect = (key: string, keyPath: string[]) => {
-    console.log(key, keyPath);
-};
+function handleMenuSelect(index: string) {
+    if (index === 'welcome') {
+        router.push('/welcome');
+    } else if (index === 'admin') {
+        router.push('/admin');
+    }
+}
 </script>
 
 <style scoped>
