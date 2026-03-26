@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.example.demo.entity.Admin;
@@ -34,6 +35,7 @@ public class AdminController {
      * 查询所有用户
      */
 
+    @SaCheckLogin
     @Operation(summary = "查询所有用户")
     @PostMapping("/list")
     @CrossOrigin
@@ -50,7 +52,7 @@ public class AdminController {
         return R.data(pageInfo);
     }
 
-
+    @SaCheckLogin
     @Operation(summary = "修改管理员")
     @PostMapping("/update")
     @CrossOrigin
@@ -60,6 +62,7 @@ public class AdminController {
        return R.success();
    }
 
+    @SaCheckLogin
    @Operation(summary = "新增用户")
    @PostMapping("/add")
    @CrossOrigin
@@ -76,6 +79,7 @@ public class AdminController {
        return  R.success();
    }
 
+   @SaCheckLogin
    @Operation(summary = "删除用户")
    @PostMapping("/delete")
    @CrossOrigin
@@ -126,6 +130,7 @@ public class AdminController {
     @Operation(summary = "用户登出")
     @PostMapping("/logout")
     @CrossOrigin
+    @SaCheckLogin
     public R logout()
     {
         StpUtil.logout();

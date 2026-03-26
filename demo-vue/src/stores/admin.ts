@@ -1,6 +1,6 @@
 import { getLocalstorage, savelocalstorage } from '@/utils/utils';
 import { defineStore } from 'pinia'
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import Constants from '@/utils/constants'
 
 //  `defineStore()` 的返回值的命名是自由的
@@ -9,7 +9,7 @@ import Constants from '@/utils/constants'
 // 第一个参数是你的应用中 Store 的唯一 ID。
 export const useAdminStore = defineStore('admin', ()=>{
 
-   const token = ref(0);
+   const token = ref('');
    const admin = reactive({
     id: 0,
     username: '',
@@ -17,14 +17,31 @@ export const useAdminStore = defineStore('admin', ()=>{
     phone: '',
    })
 
-   const getToken = computed(()=>{
-    if(token)
+   function getToken()
+   {
+    if(token.value)
     {
-        return token;
+        return token.value;
     }
     return getLocalstorage(Constants.USER_TOKEN);
 
-   })
+   }
+
+   function getAdminInfo() {
+    const adminStr = getLocalstorage('adminInfo');
+    if (adminStr) {
+        try {
+            const adminData = JSON.parse(adminStr);
+            admin.id = adminData.id || 0;
+            admin.username = adminData.username || '';
+            admin.name = adminData.name || '';
+            admin.phone = adminData.phone || '';
+        } catch (e) {
+            console.error('解析admin信息失败:', e);
+        }
+    }
+   }
+
     function setAdminInfo(data:any)
     {
         admin.id = data.id;
@@ -33,6 +50,7 @@ export const useAdminStore = defineStore('admin', ()=>{
         admin.phone = data.phone;
         token.value = data.token;
         savelocalstorage(Constants.USER_TOKEN, data.token);
+        savelocalstorage('adminInfo', JSON.stringify(admin));
     }
 
     function logout()
@@ -41,9 +59,14 @@ export const useAdminStore = defineStore('admin', ()=>{
         admin.username = '';
         admin.name = '';
         admin.phone = '';
-        token.value = 0;
+        token.value = '';
+        savelocalstorage(Constants.USER_TOKEN, '');
+        savelocalstorage('adminInfo', '');
     }
 
-   return { token, admin ,setAdminInfo,logout}
+    // 初始化时从本地存储加载admin信息
+    getAdminInfo();
+
+   return { token, admin ,setAdminInfo,logout,getToken, getAdminInfo}
 
 })

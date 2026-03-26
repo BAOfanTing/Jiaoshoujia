@@ -17,7 +17,6 @@ import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useAdminStore } from '@/stores/admin';
 import { storeToRefs } from 'pinia';
-
 //从状态管理中获取admin信息
 const adminStore = useAdminStore();
 //转为响应式数据
@@ -39,6 +38,10 @@ async function logout()
     {
         console.log(error);
         ElMessage.error('退出登录失败');
+    }
+    finally
+    {
+        useAdminStore().logout();
     }
 }
 

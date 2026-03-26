@@ -1,6 +1,6 @@
 <template>
     <div class = "welcom">
-        hello!
+        hello! vue
     </div>
     <el-button type="primary">Primary</el-button>
 </template>  
